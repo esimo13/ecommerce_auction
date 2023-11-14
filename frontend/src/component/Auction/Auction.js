@@ -1,7 +1,90 @@
-import React from "react";
+import React, { Fragment, useEffect, useState } from "react";
+import "./Auction.css";
+import { useSelector, useDispatch } from "react-redux";
+import { clearErrors, getAuction } from "../../actions/auctionAction";
+import Loader from "../layout/Loader/Loader";
+import AuctionCard from "../Home/AuctionCard";
+import Pagination from "react-js-pagination";
+import Slider from "@material-ui/core/Slider";
+import { useAlert } from "react-alert";
+import Typography from "@material-ui/core/Typography";
+import MetaData from "../layout/MetaData";
 
-function Auction() {
-  return <div>Auction</div>;
-}
+const Auctions = ({ match }) => {
+  const dispatch = useDispatch();
 
-export default Auction;
+  const alert = useAlert();
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const [price, setPrice] = useState([0, 25000]);
+
+  const {
+    auctions,
+    loading,
+    error,
+    auctionsCount,
+    resultPerPage,
+    filteredAuctionsCount,
+  } = useSelector((state) => state.auctions);
+
+  const keyword = match.params.keyword;
+
+  const setCurrentPageNo = (e) => {
+    setCurrentPage(e);
+  };
+
+  const priceHandler = (event, newPrice) => {
+    setPrice(newPrice);
+  };
+  let count = filteredAuctionsCount;
+
+  useEffect(() => {
+    if (error) {
+      alert.error(error);
+      dispatch(clearErrors());
+    }
+
+    dispatch(getAuction(keyword, currentPage, price));
+  }, [dispatch, keyword, currentPage, price, alert, error]);
+
+  return (
+    <Fragment>
+      {loading ? (
+        <Loader />
+      ) : (
+        <Fragment>
+          <MetaData title="PRODUCTS -- ECOMMERCE" />
+          <h2 className="productsHeading">Auctions</h2>
+
+          <div className="products">
+            {auctions &&
+              auctions.map((auction) => (
+                <AuctionCard key={auction._id} auction={auction} />
+              ))}
+          </div>
+
+          {resultPerPage < count && (
+            <div className="paginationBox">
+              <Pagination
+                activePage={currentPage}
+                itemsCountPerPage={resultPerPage}
+                totalItemsCount={auctionsCount}
+                onChange={setCurrentPageNo}
+                nextPageText="Next"
+                prevPageText="Prev"
+                firstPageText="1st"
+                lastPageText="Last"
+                itemClass="page-item"
+                linkClass="page-link"
+                activeClass="pageItemActive"
+                activeLinkClass="pageLinkActive"
+              />
+            </div>
+          )}
+        </Fragment>
+      )}
+    </Fragment>
+  );
+};
+
+export default Auctions;

@@ -43,6 +43,10 @@ import Contact from "./component/layout/Contact/Contact";
 import About from "./component/layout/About/About";
 import NotFound from "./component/layout/Not Found/NotFound";
 import Auction from "./component/Auction/Auction";
+import CreateAuctionForm from "./component/Auction/CreateAuctionForm.js";
+import NewAuction from "./component/Admin/NewAuction.js";
+import AuctionDetails from "./component/Auction/AuctionDetails.js";
+import AuctionList from "./component/Admin/AuctionList.js";
 
 function App() {
   const { isAuthenticated, user } = useSelector((state) => state.user);
@@ -110,6 +114,7 @@ function App() {
         <ProtectedRoute exact path="/account" component={Profile} />
 
         <ProtectedRoute exact path="/auction" component={Auction} />
+        <Route exact path="/auction/:id" component={AuctionDetails} />
 
         <ProtectedRoute exact path="/me/update" component={UpdateProfile} />
 
@@ -149,11 +154,25 @@ function App() {
           isAdmin={true}
           component={ProductList}
         />
+
+        <ProtectedRoute
+          exact
+          path="/admin/auctions"
+          isAdmin={true}
+          component={AuctionList}
+        />
+
         <ProtectedRoute
           exact
           path="/admin/product"
           isAdmin={true}
           component={NewProduct}
+        />
+        <ProtectedRoute
+          exact
+          path="/admin/auction"
+          isAdmin={true}
+          component={NewAuction}
         />
 
         <ProtectedRoute
@@ -196,11 +215,18 @@ function App() {
           component={ProductReviews}
         />
 
-        <Route
+        {/* <ProtectedRoute
+          exact
+          path="/admin/auction/new"
+          isAdmin={true}
+          component={CreateAuctionForm}
+        /> */}
+
+        {/* <Route
           component={
             window.location.pathname === "/process/payment" ? null : NotFound
           }
-        />
+        /> */}
       </Switch>
 
       <Footer />

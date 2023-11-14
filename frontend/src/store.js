@@ -12,6 +12,13 @@ import {
 } from "./reducers/productReducer";
 
 import {
+  newAuctionReducer,
+  auctionDetailsReducer,
+  auctionReducer,
+  auctionsReducer,
+} from "./reducers/auctionReducer";
+
+import {
   allUsersReducer,
   forgotPasswordReducer,
   profileReducer,
@@ -29,6 +36,11 @@ import {
 } from "./reducers/orderReducer";
 
 const reducer = combineReducers({
+  auctions: auctionsReducer,
+  auctionDetails: auctionDetailsReducer,
+  newAuction: newAuctionReducer,
+  auction: auctionReducer,
+  //product
   products: productsReducer,
   productDetails: productDetailsReducer,
   user: userReducer,
