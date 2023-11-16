@@ -16,7 +16,7 @@ const Auctions = ({ match }) => {
   const alert = useAlert();
 
   const [currentPage, setCurrentPage] = useState(1);
-  const [price, setPrice] = useState([0, 25000]);
+  const [price, setPrice] = useState([0, 10000000]);
 
   const {
     auctions,

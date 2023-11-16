@@ -39,4 +39,11 @@ export const DELETE_REVIEW_SUCCESS = "DELETE_REVIEW_SUCCESS";
 export const DELETE_REVIEW_RESET = "DELETE_REVIEW_RESET";
 export const DELETE_REVIEW_FAIL = "DELETE_REVIEW_FAIL";
 
+// auctionConstants.js
+
+export const BID_REQUEST = "BID_REQUEST";
+export const BID_SUCCESS = "BID_SUCCESS";
+export const BID_FAIL = "BID_FAIL";
+export const BID_RESET = "BID_RESET";
+
 export const CLEAR_ERRORS = "CLEAR_ERRORS";

@@ -5,9 +5,6 @@ const {
   updateAuction,
   deleteAuction,
   getAuctionDetails,
-  createAuctionReview,
-  getAuctionReviews,
-  deleteReview,
   getAdminAuctions,
 } = require("../controllers/auctionController");
 const { isAuthenticatedUser, authorizeRoles } = require("../middleware/auth");

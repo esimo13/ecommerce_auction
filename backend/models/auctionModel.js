@@ -29,7 +29,9 @@ const auctionSchema = mongoose.Schema({
   ],
   currentBid: {
     type: Number,
-    default: 0,
+    default: function () {
+      return this.price || 0;
+    },
   },
   endDate: {
     type: Date,
