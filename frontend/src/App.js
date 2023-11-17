@@ -43,7 +43,6 @@ import Contact from "./component/layout/Contact/Contact";
 import About from "./component/layout/About/About";
 import NotFound from "./component/layout/Not Found/NotFound";
 import Auction from "./component/Auction/Auction";
-import CreateAuctionForm from "./component/Auction/CreateAuctionForm.js";
 import NewAuction from "./component/Admin/NewAuction.js";
 import AuctionDetails from "./component/Auction/AuctionDetails.js";
 import AuctionList from "./component/Admin/AuctionList.js";
@@ -130,7 +129,7 @@ function App() {
 
         <Route exact path="/login" component={LoginSignUp} />
 
-        <Route exact path="/cart" component={Cart} />
+        <ProtectedRoute exact path="/cart" component={Cart} />
 
         <ProtectedRoute exact path="/shipping" component={Shipping} />
 
@@ -215,18 +214,11 @@ function App() {
           component={ProductReviews}
         />
 
-        {/* <ProtectedRoute
-          exact
-          path="/admin/auction/new"
-          isAdmin={true}
-          component={CreateAuctionForm}
-        /> */}
-
-        {/* <Route
+        <Route
           component={
             window.location.pathname === "/process/payment" ? null : NotFound
           }
-        /> */}
+        />
       </Switch>
 
       <Footer />

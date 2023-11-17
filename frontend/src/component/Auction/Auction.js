@@ -5,9 +5,7 @@ import { clearErrors, getAuction } from "../../actions/auctionAction";
 import Loader from "../layout/Loader/Loader";
 import AuctionCard from "../Home/AuctionCard";
 import Pagination from "react-js-pagination";
-import Slider from "@material-ui/core/Slider";
 import { useAlert } from "react-alert";
-import Typography from "@material-ui/core/Typography";
 import MetaData from "../layout/MetaData";
 
 const Auctions = ({ match }) => {
