@@ -30,7 +30,7 @@ const Auctions = ({ match }) => {
   const setCurrentPageNo = (e) => {
     setCurrentPage(e);
   };
-
+  // eslint-disable-next-line
   const priceHandler = (event, newPrice) => {
     setPrice(newPrice);
   };
