@@ -2,6 +2,8 @@ const app = require("./app");
 const cloudinary = require("cloudinary");
 const connectDatabase = require("./config/database");
 const cors = require("cors");
+const path = require("path");
+const dotenv = require("dotenv");
 
 // Handling Uncaught Exception
 process.on("uncaughtException", (err) => {
@@ -20,9 +22,9 @@ app.use(
 );
 
 // Config
-if (process.env.NODE_ENV !== "PRODUCTION") {
-  require("dotenv").config({ path: "backend/config/config.env" });
-}
+// Use an absolute path so it works on Render regardless of the working directory.
+// In production (Render), prefer Environment Variables; this file is mainly for local dev.
+dotenv.config({ path: path.resolve(__dirname, "config", "config.env") });
 
 // Connecting to database
 connectDatabase();

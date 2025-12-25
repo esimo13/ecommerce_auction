@@ -8,11 +8,6 @@ const cors = require("cors");
 
 const errorMiddleware = require("./middleware/error");
 
-// Config
-if (process.env.NODE_ENV !== "PRODUCTION") {
-  require("dotenv").config({ path: "backend/config/config.env" });
-}
-
 app.use(
   cors({
     origin: "http://localhost:3000", // Allow requests only from this origin

@@ -1,6 +1,12 @@
 const mongoose = require("mongoose");
 
 const connectDatabase = () => {
+  if (!process.env.DB_URI) {
+    throw new Error(
+      "DB_URI is not set. On Render, add DB_URI in the service Environment Variables."
+    );
+  }
+
   mongoose
     .connect(process.env.DB_URI, {
       useNewUrlParser: true,
