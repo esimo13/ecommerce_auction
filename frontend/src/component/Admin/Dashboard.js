@@ -13,20 +13,19 @@ import MetaData from "../layout/MetaData";
 const Dashboard = () => {
   const dispatch = useDispatch();
 
-  const { products } = useSelector((state) => state.products);
+  const { products = [] } = useSelector((state) => state.products || {});
 
-  const { orders } = useSelector((state) => state.allOrders);
+  const { orders = [] } = useSelector((state) => state.allOrders || {});
 
-  const { users } = useSelector((state) => state.allUsers);
+  const { users = [] } = useSelector((state) => state.allUsers || {});
 
   let outOfStock = 0;
 
-  products &&
-    products.forEach((item) => {
-      if (item.Stock === 0) {
-        outOfStock += 1;
-      }
-    });
+  products.forEach((item) => {
+    if (item.Stock === 0) {
+      outOfStock += 1;
+    }
+  });
 
   useEffect(() => {
     dispatch(getAdminProduct());
@@ -35,10 +34,9 @@ const Dashboard = () => {
   }, [dispatch]);
 
   let totalAmount = 0;
-  orders &&
-    orders.forEach((item) => {
-      totalAmount += item.totalPrice;
-    });
+  orders.forEach((item) => {
+    totalAmount += item.totalPrice;
+  });
 
   const lineState = {
     labels: ["Initial Amount", "Amount Earned"],

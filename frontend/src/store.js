@@ -63,12 +63,40 @@ const reducer = combineReducers({
 
 let initialState = {
   cart: {
-    cartItems: localStorage.getItem("cartItems")
-      ? JSON.parse(localStorage.getItem("cartItems"))
-      : [],
-    shippingInfo: localStorage.getItem("shippingInfo")
-      ? JSON.parse(localStorage.getItem("shippingInfo"))
-      : {},
+    // Cart is scoped per-user (or guest). We don't know the user at store init,
+    // so default to the guest scope (and migrate legacy keys if present).
+    cartItems: (() => {
+      const guestKey = "cartItems:guest";
+      const legacyKey = "cartItems";
+      try {
+        const guest = localStorage.getItem(guestKey);
+        if (guest) return JSON.parse(guest);
+        const legacy = localStorage.getItem(legacyKey);
+        if (legacy) {
+          const parsed = JSON.parse(legacy);
+          localStorage.setItem(guestKey, JSON.stringify(parsed));
+          localStorage.removeItem(legacyKey);
+          return parsed;
+        }
+      } catch (e) {}
+      return [];
+    })(),
+    shippingInfo: (() => {
+      const guestKey = "shippingInfo:guest";
+      const legacyKey = "shippingInfo";
+      try {
+        const guest = localStorage.getItem(guestKey);
+        if (guest) return JSON.parse(guest);
+        const legacy = localStorage.getItem(legacyKey);
+        if (legacy) {
+          const parsed = JSON.parse(legacy);
+          localStorage.setItem(guestKey, JSON.stringify(parsed));
+          localStorage.removeItem(legacyKey);
+          return parsed;
+        }
+      } catch (e) {}
+      return {};
+    })(),
   },
 };
 

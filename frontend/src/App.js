@@ -30,6 +30,7 @@ import { loadStripe } from "@stripe/stripe-js";
 import OrderSuccess from "./component/Cart/OrderSuccess";
 import MyOrders from "./component/Order/MyOrders";
 import OrderDetails from "./component/Order/OrderDetails";
+import Loader from "./component/layout/Loader/Loader";
 import Dashboard from "./component/Admin/Dashboard.js";
 import ProductList from "./component/Admin/ProductList.js";
 import NewProduct from "./component/Admin/NewProduct";
@@ -46,16 +47,23 @@ import Auction from "./component/Auction/Auction";
 import NewAuction from "./component/Admin/NewAuction.js";
 import AuctionDetails from "./component/Auction/AuctionDetails.js";
 import AuctionList from "./component/Admin/AuctionList.js";
+import { hydrateCart } from "./actions/cartAction";
 
 function App() {
   const { isAuthenticated, user } = useSelector((state) => state.user);
+  const userId = user?._id || user?.id;
 
   const [stripeApiKey, setStripeApiKey] = useState("");
 
   async function getStripeApiKey() {
-    const { data } = await axios.get("/api/v1/stripeapikey");
-
-    setStripeApiKey(data.stripeApiKey);
+    try {
+      const { data } = await axios.get("/api/v1/stripeapikey");
+      setStripeApiKey(data.stripeApiKey);
+    } catch (e) {
+      // If user isn't logged in (or cookie missing), leave key empty and let the Payment route
+      // show a loader/redirect instead of falling through to NotFound.
+      setStripeApiKey("");
+    }
   }
 
   useEffect(() => {
@@ -73,16 +81,25 @@ function App() {
       store.dispatch(loadUser());
     }
 
-    // Fetch Stripe API key if the component is still mounted
-    if (isMounted) {
-      getStripeApiKey();
-    }
-
     return () => {
       // Set isMounted to false to indicate unmounting
       isMounted = false;
     };
   }, []);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      getStripeApiKey();
+    } else {
+      setStripeApiKey("");
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isAuthenticated]);
+
+  // Keep cart isolated per user: whenever auth/user changes, load the right cart scope.
+  useEffect(() => {
+    store.dispatch(hydrateCart());
+  }, [isAuthenticated, userId]);
 
   window.addEventListener("contextmenu", (e) => e.preventDefault());
 
@@ -91,12 +108,6 @@ function App() {
       <Header />
 
       {isAuthenticated && <UserOptions user={user} />}
-
-      {stripeApiKey && (
-        <Elements stripe={loadStripe(stripeApiKey)}>
-          <ProtectedRoute exact path="/process/payment" component={Payment} />
-        </Elements>
-      )}
 
       <Switch>
         <Route exact path="/" component={Home} />
@@ -138,6 +149,20 @@ function App() {
         <ProtectedRoute exact path="/orders" component={MyOrders} />
 
         <ProtectedRoute exact path="/order/confirm" component={ConfirmOrder} />
+
+        <ProtectedRoute
+          exact
+          path="/process/payment"
+          component={(props) =>
+            stripeApiKey ? (
+              <Elements stripe={loadStripe(stripeApiKey)}>
+                <Payment {...props} />
+              </Elements>
+            ) : (
+              <Loader />
+            )
+          }
+        />
 
         <ProtectedRoute exact path="/order/:id" component={OrderDetails} />
 
@@ -214,11 +239,7 @@ function App() {
           component={ProductReviews}
         />
 
-        <Route
-          component={
-            window.location.pathname === "/process/payment" ? null : NotFound
-          }
-        />
+        <Route component={NotFound} />
       </Switch>
 
       <Footer />

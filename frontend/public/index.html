@@ -13,6 +13,65 @@
 
     <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
 
+    <!-- Dev-only: prevent CRA overlay from showing errors thrown by browser extensions (e.g. MetaMask). -->
+    <script>
+      (function () {
+        // Enable only for local dev hosts to avoid changing production behavior.
+        var host = (window.location && window.location.hostname) || "";
+        var isLocalDev =
+          host === "localhost" ||
+          host === "127.0.0.1" ||
+          host === "0.0.0.0" ||
+          host === "";
+        if (!isLocalDev) return;
+
+        function isExtensionError(message, source) {
+          var msg = String(message || "").toLowerCase();
+          var src = String(source || "");
+          return (
+            src.indexOf("chrome-extension://") === 0 ||
+            src.indexOf("moz-extension://") === 0 ||
+            msg.indexOf("failed to connect to metamask") !== -1
+          );
+        }
+
+        window.addEventListener(
+          "error",
+          function (event) {
+            var message = event && event.message;
+            var filename = event && event.filename;
+            if (isExtensionError(message, filename)) {
+              if (event && event.preventDefault) event.preventDefault();
+              if (event && event.stopImmediatePropagation)
+                event.stopImmediatePropagation();
+              return false;
+            }
+          },
+          true
+        );
+
+        window.addEventListener(
+          "unhandledrejection",
+          function (event) {
+            var reason = event && event.reason;
+            var message =
+              typeof reason === "string"
+                ? reason
+                : reason && typeof reason.message === "string"
+                ? reason.message
+                : "";
+            if (isExtensionError(message, "")) {
+              if (event && event.preventDefault) event.preventDefault();
+              if (event && event.stopImmediatePropagation)
+                event.stopImmediatePropagation();
+              return false;
+            }
+          },
+          true
+        );
+      })();
+    </script>
+
     <title>ECOMMERCE</title>
   </head>
   <body>

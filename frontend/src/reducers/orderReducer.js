@@ -85,7 +85,9 @@ export const allOrdersReducer = (state = { orders: [] }, action) => {
   switch (action.type) {
     case ALL_ORDERS_REQUEST:
       return {
+        ...state,
         loading: true,
+        orders: state.orders || [],
       };
 
     case ALL_ORDERS_SUCCESS:
@@ -96,7 +98,9 @@ export const allOrdersReducer = (state = { orders: [] }, action) => {
 
     case ALL_ORDERS_FAIL:
       return {
+        ...state,
         loading: false,
+        orders: state.orders || [],
         error: action.payload,
       };
     case CLEAR_ERRORS:

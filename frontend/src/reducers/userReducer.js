@@ -212,6 +212,7 @@ export const allUsersReducer = (state = { users: [] }, action) => {
       return {
         ...state,
         loading: true,
+        users: state.users || [],
       };
     case ALL_USERS_SUCCESS:
       return {
@@ -224,6 +225,7 @@ export const allUsersReducer = (state = { users: [] }, action) => {
       return {
         ...state,
         loading: false,
+        users: state.users || [],
         error: action.payload,
       };
 

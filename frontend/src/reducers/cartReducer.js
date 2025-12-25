@@ -2,6 +2,7 @@ import {
   ADD_TO_CART,
   REMOVE_CART_ITEM,
   SAVE_SHIPPING_INFO,
+  CART_HYDRATE,
 } from "../constants/cartConstants";
 
 export const cartReducer = (
@@ -9,6 +10,12 @@ export const cartReducer = (
   action
 ) => {
   switch (action.type) {
+    case CART_HYDRATE:
+      return {
+        ...state,
+        cartItems: action.payload?.cartItems || [],
+        shippingInfo: action.payload?.shippingInfo || {},
+      };
     case ADD_TO_CART:
       const item = action.payload;
 
