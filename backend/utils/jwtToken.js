@@ -3,6 +3,8 @@
 const sendToken = (user, statusCode, res) => {
   const token = user.getJWTToken();
 
+  const isProd = String(process.env.NODE_ENV || "").toLowerCase() === "production";
+
   // options for cookie
   const options = {
     expires: new Date(
@@ -10,8 +12,8 @@ const sendToken = (user, statusCode, res) => {
     ),
     httpOnly: true,
     // Cross-site cookies (Vercel frontend -> Render backend) need SameSite=None + Secure.
-    sameSite: process.env.NODE_ENV === "PRODUCTION" ? "None" : "Lax",
-    secure: process.env.NODE_ENV === "PRODUCTION",
+    sameSite: isProd ? "None" : "Lax",
+    secure: isProd,
   };
 
   res.status(statusCode).cookie("token", token, options).json({

@@ -21,7 +21,9 @@ const corsOptions = {
     // Allow non-browser requests (curl/postman) with no Origin.
     if (!origin) return callback(null, true);
     if (allowedOrigins.includes(origin)) return callback(null, true);
-    return callback(new Error(`CORS blocked for origin: ${origin}`), false);
+    // Don't throw (which becomes a 500); just omit CORS headers.
+    // The browser will block the response and you'll see a CORS error client-side.
+    return callback(null, false);
   },
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
