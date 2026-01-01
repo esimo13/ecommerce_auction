@@ -8,14 +8,29 @@ const cors = require("cors");
 
 const errorMiddleware = require("./middleware/error");
 
-app.use(
-  cors({
-    origin: "http://localhost:3000", // Allow requests only from this origin
-    methods: "GET,POST", // Allow only specified HTTP methods
-    allowedHeaders: "Content-Type,Authorization", // Allow only specified headers
-    optionsSuccessStatus: 204, // Respond with 204 No Content for preflight requests
-  })
-);
+// Needed on Render (proxy) so secure cookies work correctly.
+app.set("trust proxy", 1);
+
+const allowedOrigins = (process.env.FRONTEND_URL || "http://localhost:3000")
+  .split(",")
+  .map((s) => s.trim())
+  .filter(Boolean);
+
+const corsOptions = {
+  origin: (origin, callback) => {
+    // Allow non-browser requests (curl/postman) with no Origin.
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.includes(origin)) return callback(null, true);
+    return callback(new Error(`CORS blocked for origin: ${origin}`), false);
+  },
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+  optionsSuccessStatus: 204,
+};
+
+app.use(cors(corsOptions));
+app.options("*", cors(corsOptions));
 app.use(express.json());
 app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: true }));

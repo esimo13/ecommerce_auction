@@ -9,6 +9,9 @@ const sendToken = (user, statusCode, res) => {
       Date.now() + process.env.COOKIE_EXPIRE * 24 * 60 * 60 * 1000
     ),
     httpOnly: true,
+    // Cross-site cookies (Vercel frontend -> Render backend) need SameSite=None + Secure.
+    sameSite: process.env.NODE_ENV === "PRODUCTION" ? "None" : "Lax",
+    secure: process.env.NODE_ENV === "PRODUCTION",
   };
 
   res.status(statusCode).cookie("token", token, options).json({

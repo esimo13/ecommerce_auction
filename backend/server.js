@@ -1,7 +1,6 @@
 const app = require("./app");
 const cloudinary = require("cloudinary");
 const connectDatabase = require("./config/database");
-const cors = require("cors");
 const path = require("path");
 const dotenv = require("dotenv");
 
@@ -11,15 +10,6 @@ process.on("uncaughtException", (err) => {
   console.log(`Shutting down the server due to Uncaught Exception`);
   process.exit(1);
 });
-
-app.use(
-  cors({
-    origin: "http://localhost:3000", // Allow requests only from this origin
-    methods: "GET,POST", // Allow only specified HTTP methods
-    allowedHeaders: "Content-Type,Authorization", // Allow only specified headers
-    optionsSuccessStatus: 204, // Respond with 204 No Content for preflight requests
-  })
-);
 
 // Config
 // Use an absolute path so it works on Render regardless of the working directory.
