@@ -11,16 +11,29 @@ const errorMiddleware = require("./middleware/error");
 // Needed on Render (proxy) so secure cookies work correctly.
 app.set("trust proxy", 1);
 
+const normalizeOrigin = (value) => {
+  if (!value) return "";
+  const raw = String(value).trim();
+  if (!raw) return "";
+  try {
+    // Ensures "https://x.com/" and "https://x.com" normalize to same value.
+    return new URL(raw).origin;
+  } catch (e) {
+    return raw.replace(/\/+$/, "");
+  }
+};
+
 const allowedOrigins = (process.env.FRONTEND_URL || "http://localhost:3000")
   .split(",")
-  .map((s) => s.trim())
+  .map((s) => normalizeOrigin(s))
   .filter(Boolean);
 
 const corsOptions = {
   origin: (origin, callback) => {
     // Allow non-browser requests (curl/postman) with no Origin.
     if (!origin) return callback(null, true);
-    if (allowedOrigins.includes(origin)) return callback(null, true);
+    const normalized = normalizeOrigin(origin);
+    if (allowedOrigins.includes(normalized)) return callback(null, true);
     // Don't throw (which becomes a 500); just omit CORS headers.
     // The browser will block the response and you'll see a CORS error client-side.
     return callback(null, false);
