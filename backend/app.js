@@ -23,17 +23,28 @@ const normalizeOrigin = (value) => {
   }
 };
 
-const allowedOrigins = (process.env.FRONTEND_URL || "http://localhost:3000")
+const defaultAllowedOrigins = [
+  "http://localhost:3000",
+  // Production frontend (Vercel)
+  "https://justorefrontend.vercel.app",
+];
+
+const allowedOrigins = (process.env.FRONTEND_URL || "")
   .split(",")
   .map((s) => normalizeOrigin(s))
   .filter(Boolean);
+
+// If FRONTEND_URL isn't loaded (common when misconfiguring Render Secret Files),
+// fall back to a safe default list so the app still works.
+const effectiveAllowedOrigins =
+  allowedOrigins.length > 0 ? allowedOrigins : defaultAllowedOrigins;
 
 const corsOptions = {
   origin: (origin, callback) => {
     // Allow non-browser requests (curl/postman) with no Origin.
     if (!origin) return callback(null, true);
     const normalized = normalizeOrigin(origin);
-    if (allowedOrigins.includes(normalized)) return callback(null, true);
+    if (effectiveAllowedOrigins.includes(normalized)) return callback(null, true);
     // Don't throw (which becomes a 500); just omit CORS headers.
     // The browser will block the response and you'll see a CORS error client-side.
     return callback(null, false);
